@@ -1,11 +1,61 @@
+# Xcode
 build/
 DerivedData/
 *.xcuserstate
 xcuserdata/
-.DS_Store
+*.xccheckout
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# IPA / archives
 *.ipa
 *.xcarchive
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python (Companion)
 __pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+
+# Logs
+*.log
+npm-debug.log*
 
 # Release archives are committed on purpose
 !dist/

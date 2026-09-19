@@ -1,3 +1,6 @@
-7a6c7d3a3f8620d50cd4e45eb090896eb0c2ada9c8d0e89f20708274cf21b54e  AIAgentHub-Companion-v1.0.0.zip
-62cab358bdb0b65ce25120519692c8f905498f165c4e13c4edf6331c3ee4751a  AIAgentHub-src-v1.0.0.zip
-255ddb0a285f88565bdc632c5a7f02b43f1dd5db0c6ba150c69b3234f9de0f68  AIAgentHub-src-v1.0.0.tar.gz
+255ddb0a285f88565bdc632c5a7f02b43f1dd5db0c6ba150c69b3234f9de0f68  dist/AIAgentHub-src-v1.0.0.tar.gz
+586d3a69c82570a420f355e424e01e658ad4015f0b4eaa4b6d3be0d26c31bb04  dist/AIAgentHub-src-v1.1.0.zip
+62cab358bdb0b65ce25120519692c8f905498f165c4e13c4edf6331c3ee4751a  dist/AIAgentHub-src-v1.0.0.zip
+7a6c7d3a3f8620d50cd4e45eb090896eb0c2ada9c8d0e89f20708274cf21b54e  dist/AIAgentHub-Companion-v1.0.0.zip
+a23fb1d899e0ad892c22dd456c68a40c9946a587306f8e85ad878dbfedb3bca2  dist/AIAgentHub-src-v1.1.0.tar.gz
+daa9ab1a7e813eedd5f5628e9241a9fbe4f59a89b08362e9e883ef78715a80bf  dist/AIAgentHub-Companion-v1.1.0.zip

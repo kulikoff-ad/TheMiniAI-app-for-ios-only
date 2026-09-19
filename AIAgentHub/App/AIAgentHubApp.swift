@@ -11,6 +11,7 @@ struct AIAgentHubApp: App {
     @StateObject private var github = GitHubStore.shared
     @StateObject private var runtime = AgentRuntime.shared
     @StateObject private var companion = CompanionClient.shared
+    @StateObject private var online = OnlineProviderStore.shared
 
     init() {
         DownloadManager.shared.warmUp()
@@ -39,6 +40,7 @@ struct AIAgentHubApp: App {
                 .environmentObject(github)
                 .environmentObject(runtime)
                 .environmentObject(companion)
+                .environmentObject(online)
                 .preferredColorScheme(.dark)
                 .tint(Theme.accent)
                 .task {
@@ -57,11 +59,12 @@ struct RootTabView: View {
     var body: some View {
         TabView(selection: $selection) {
             HomeView().tabItem { Label("Home", systemImage: "house") }.tag(0)
-            ModelsView().tabItem { Label("Models", systemImage: "cube.box") }.tag(1)
-            AgentsView().tabItem { Label("Agents", systemImage: "cpu") }.tag(2)
-            WorkspaceView().tabItem { Label("Workspace", systemImage: "square.split.2x1") }.tag(3)
-            GitHubView().tabItem { Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right") }.tag(4)
-            SettingsView().tabItem { Label("Settings", systemImage: "gearshape") }.tag(5)
+            HuggingFaceHubView().tabItem { Label("Hugging Face", systemImage: "face.smiling") }.tag(1)
+            ModelsView().tabItem { Label("Models", systemImage: "cube.box") }.tag(2)
+            AgentsView().tabItem { Label("Agents", systemImage: "cpu") }.tag(3)
+            WorkspaceView().tabItem { Label("Workspace", systemImage: "square.split.2x1") }.tag(4)
+            GitHubView().tabItem { Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right") }.tag(5)
+            SettingsView().tabItem { Label("Settings", systemImage: "gearshape") }.tag(6)
         }
     }
 }
