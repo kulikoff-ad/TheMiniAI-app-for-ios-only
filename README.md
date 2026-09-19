@@ -13,7 +13,7 @@ GitHub, and your own computer.
 
 ### Готовый IPA (собран CI на macOS + Xcode 16.4)
 
-**[⬇️ AIAgentHub-unsigned.ipa](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases/download/build-5/AIAgentHub-unsigned.ipa)** — 0.63 MB, неподписанный.
+**[⬇️ Скачать последний IPA](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases/latest)** — неподписанный, ~0.6 MB.
 
 Ставится через AltStore / Sideloadly, либо пересобирается с вашей подписью:
 `./scripts/build_ipa.sh --team <YOUR_TEAM_ID>`.
