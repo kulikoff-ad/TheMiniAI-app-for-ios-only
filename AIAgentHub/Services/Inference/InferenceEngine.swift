@@ -195,17 +195,36 @@ final class CloudEngine: InferenceEngine {
 
     private func openAICompatible(payload: [[String: String]], temperature: Double, maxTokens: Int,
                                   onToken: @escaping (String) -> Void) async throws -> String {
-        let baseString = UserDefaults.standard.string(forKey: "openai.baseURL") ?? "https://api.openai.com/v1"
+        // Prefer the new Provider Manager's selected provider if it matches this modelId, otherwise fallback to legacy single key.
+        var baseString: String
+        var key: String?
+        var resolvedModel = modelId
+        if let selected = await MainActor.run(body: { OnlineProviderStore.shared.selected }), selected.model == modelId || UserDefaults.standard.string(forKey: "online.mode") != nil {
+            // If the caller requested a model that equals the selected provider's model, use that provider's URL/key
+            // Otherwise still try selected provider as Auto fallback
+            baseString = selected.baseURL
+            key = await MainActor.run { OnlineProviderStore.shared.getKey(for: selected) } ?? KeychainStore.get(.openAIKey)
+            resolvedModel = selected.model
+            // If this CloudEngine was created with explicit Hugging Face Router model but selected is Custom, respect selected's model
+            if modelId.contains("/") && selected.baseURL.contains("huggingface") {
+                baseString = selected.baseURL
+                resolvedModel = modelId
+                key = KeychainStore.get(.huggingFaceToken) ?? key
+            }
+        } else {
+            baseString = UserDefaults.standard.string(forKey: "openai.baseURL") ?? "https://api.openai.com/v1"
+            key = KeychainStore.get(.openAIKey)
+        }
         guard let url = URL(string: baseString + "/chat/completions"),
-              let key = KeychainStore.get(.openAIKey), !key.isEmpty else {
-            throw InferenceError.runtimeMissing("OpenAI-compatible endpoint (set base URL and key in Settings)")
+              let k = key, !k.isEmpty else {
+            throw InferenceError.runtimeMissing("OpenAI-compatible endpoint (set base URL and key in Settings → Online AI → Provider Manager)")
         }
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
-        req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        req.setValue("Bearer \(k)", forHTTPHeaderField: "Authorization")
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONSerialization.data(withJSONObject: [
-            "model": modelId, "messages": payload,
+            "model": resolvedModel, "messages": payload,
             "temperature": temperature, "max_tokens": maxTokens
         ])
         let (data, response) = try await URLSession.shared.data(for: req)

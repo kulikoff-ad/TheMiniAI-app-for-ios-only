@@ -184,6 +184,20 @@ actor GitHubAPI {
         return try await send(req, as: GHPullRequest.self)
     }
 
+    func deleteFile(owner: String, repo: String, path: String, message: String, branch: String, sha: String) async throws {
+        guard !sha.isEmpty else { return }
+        let req = try request("repos/\(owner)/\(repo)/contents/\(path)", method: "DELETE", body: [
+            "message": message,
+            "sha": sha,
+            "branch": branch
+        ])
+        let (data, response) = try await session.data(for: req)
+        let code = (response as? HTTPURLResponse)?.statusCode ?? 0
+        guard (200..<300).contains(code) else {
+            throw GHError.http(code, String(data: data.prefix(400), encoding: .utf8) ?? "")
+        }
+    }
+
     func compare(owner: String, repo: String, base: String, head: String) async throws -> String {
         guard let token = KeychainStore.get(.githubToken) else { throw GHError.noToken }
         var req = URLRequest(url: base_url(owner: owner, repo: repo, base: base, head: head))
@@ -201,4 +215,27 @@ actor GitHubAPI {
     private func base_url(owner: String, repo: String, base: String, head: String) -> URL {
         URL(string: "https://api.github.com/repos/\(owner)/\(repo)/compare/\(base)...\(head)")!
     }
+
+    func createRepository(name: String, description: String, isPrivate: Bool) async throws -> GHRepo {
+        let req = try request("user/repos", method: "POST", body: [
+            "name": name,
+            "description": description,
+            "private": isPrivate
+        ] as [String : Any])
+        return try await send(req, as: GHRepo.self)
+    }
+
+    func issues(owner: String, repo: String) async throws -> [GHIssue] {
+        try await send(request("repos/\(owner)/\(repo)/issues", query: [.init(name: "state", value: "open"), .init(name: "per_page", value: "20")]), as: [GHIssue].self)
+    }
+}
+
+struct GHIssue: Codable, Identifiable, Hashable {
+    let id: Int
+    let number: Int
+    let title: String
+    var body: String?
+    var state: String?
+    var htmlUrl: String?
+    enum CodingKeys: String, CodingKey { case id, number, title, body, state; case htmlUrl = "html_url" }
 }

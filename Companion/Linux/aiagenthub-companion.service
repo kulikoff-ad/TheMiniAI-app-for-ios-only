@@ -1,0 +1,11 @@
+[Unit]
+Description=AI Agent Hub Companion
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 %h/Companion/aiagenthub_companion.py --root %h/Projects --host 127.0.0.1 --port 8765 --allow-shell
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

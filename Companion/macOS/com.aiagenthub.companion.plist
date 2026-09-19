@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.aiagenthub.companion</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>/Users/YOU/Companion/aiagenthub_companion.py</string>
+    <string>--root</string><string>/Users/YOU/Projects</string>
+    <string>--host</string><string>127.0.0.1</string>
+    <string>--port</string><string>8765</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>StandardOutPath</key><string>/tmp/aiagenthub-companion.log</string>
+  <key>StandardErrorPath</key><string>/tmp/aiagenthub-companion.err</string>
+</dict>
+</plist>
