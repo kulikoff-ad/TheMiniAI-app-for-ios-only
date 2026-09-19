@@ -1,0 +1,68 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Show toolchain
+        run: |
+          sudo xcode-select -p
+          xcodebuild -version
+          swift --version
+
+      - name: Inspect project
+        run: |
+          xcodebuild -list -project AIAgentHub.xcodeproj 2>&1 | tee -a /tmp/build.log
+
+      - name: Build unsigned IPA
+        id: build
+        run: |
+          set -o pipefail
+          ./scripts/build_ipa.sh --unsigned 2>&1 | tee -a /tmp/build.log
+
+      - name: Publish build log (readable via API)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "run=${GITHUB_RUN_ID} sha=${GITHUB_SHA} status=${{ job.status }}"
+            echo '--- tail of build log ---'
+            tail -c 50000 /tmp/build.log || echo "(no log)"
+          } > /tmp/report.txt
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/comments" \
+            -f body="$(printf '```\n%s\n```' "$(cat /tmp/report.txt)")" >/dev/null || true
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIAgentHub-unsigned-ipa
+          path: build/*.ipa
+          if-no-files-found: error
+
+      - name: Publish rolling release with download link
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="build-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" build/*.ipa \
+            --title "AI Agent Hub — unsigned IPA (build ${GITHUB_RUN_NUMBER})" \
+            --notes "Unsigned IPA built from \`${GITHUB_SHA}\`.
+
+          Install with AltStore / Sideloadly, or re-sign with your own certificate:
+          \`\`\`
+          ./scripts/build_ipa.sh --team <YOUR_TEAM_ID>
+          \`\`\`" \
+            --target "$GITHUB_SHA" \
+            || gh release upload "$TAG" build/*.ipa --clobber
