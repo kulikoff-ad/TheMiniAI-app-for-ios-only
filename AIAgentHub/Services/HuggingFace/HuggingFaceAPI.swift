@@ -104,11 +104,12 @@ actor HuggingFaceAPI {
     // MARK: - Model detail
 
     func modelDetail(id: String, revision: String = "main") async throws -> HFModelDetail {
-        let path = "api/models/\(id)/revision/\(revision)"
-        guard let url = URL(string: path, relativeTo: base)?.absoluteURL else { throw HFError.badURL }
-        var comps = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+        guard var comps = URLComponents(string: "\(base.absoluteString)/api/models/\(id)/revision/\(revision)") else {
+            throw HFError.badURL
+        }
         comps.queryItems = [.init(name: "blobs", value: "false")]
-        let data = try await perform(authorizedRequest(url: comps.url!), repoHint: id)
+        guard let url = comps.url else { throw HFError.badURL }
+        let data = try await perform(authorizedRequest(url: url), repoHint: id)
         return try decode(HFModelDetail.self, from: data)
     }
 
