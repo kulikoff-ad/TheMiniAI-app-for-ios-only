@@ -212,7 +212,7 @@ struct ToolRegistry {
             return "Wrote \(call.string("path")) on \(client.info?.hostname ?? "host")."
         case "run":
             let cmd = call.string("command")
-            let result = try await runtime.requestConfirmation(
+            let result = await runtime.requestConfirmation(
                 title: "Run on \(client.info?.hostname ?? "computer")",
                 detail: cmd, diff: nil) {
                     do {

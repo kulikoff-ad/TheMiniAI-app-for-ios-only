@@ -11,20 +11,25 @@ GitHub, and your own computer.
 
 ## ⬇️ Downloads
 
-Прямые ссылки (ветка `arena/01a0b817-theminiai-app-for-ios-only`):
+### Готовый IPA (собран CI на macOS + Xcode 16.4)
+
+**[⬇️ AIAgentHub-unsigned.ipa](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases/download/build-5/AIAgentHub-unsigned.ipa)** — 0.63 MB, неподписанный.
+
+Ставится через AltStore / Sideloadly, либо пересобирается с вашей подписью:
+`./scripts/build_ipa.sh --team <YOUR_TEAM_ID>`.
+
+Все сборки: [Releases](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases) ·
+[Actions](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/actions/workflows/ios.yml).
+Каждый push в ветку публикует новый релиз `build-<номер>` с прямой ссылкой на IPA.
+
+### Исходники и companion
 
 | Файл | Что это | Ссылка |
 |---|---|---|
-| `AIAgentHub-src-v1.0.0.zip` | Полный Xcode-проект (ZIP, 95 KB) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.zip) |
-| `AIAgentHub-src-v1.0.0.tar.gz` | Полный Xcode-проект (tar.gz, 66 KB) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.tar.gz) |
-| `AIAgentHub-Companion-v1.0.0.zip` | Companion-демон для macOS/Windows/Linux | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-Companion-v1.0.0.zip) |
+| `AIAgentHub-src-v1.0.0.zip` | Полный Xcode-проект (ZIP) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.zip) |
+| `AIAgentHub-src-v1.0.0.tar.gz` | Полный Xcode-проект (tar.gz) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.tar.gz) |
+| `AIAgentHub-Companion-v1.0.0.zip` | Companion-демон (macOS/Windows/Linux) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-Companion-v1.0.0.zip) |
 | `SHA256SUMS.txt` | Контрольные суммы | [открыть](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/SHA256SUMS.txt) |
-
-**Готовый IPA** собирается автоматически workflow-ом `Build IPA` на macOS-раннере и публикуется
-в [Releases](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases) с тегом
-`build-<номер>`, а также доступен как артефакт в
-[Actions](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/actions/workflows/ios.yml).
-IPA невозможно собрать на Linux — нужен Xcode, поэтому его делает CI или ваш Mac.
 
 ---
 
@@ -348,8 +353,9 @@ pretending to run.
 
 These are real constraints, stated plainly rather than hidden behind mock UI:
 
-1. **IPA generation requires macOS + Xcode.** The repo contains the full project and build
-   script; run it on a Mac or via the included GitHub Actions workflow.
+1. **IPA generation requires macOS + Xcode** — Apple's toolchain does not run on Linux.
+   The included GitHub Actions workflow builds it on a macOS runner and publishes the IPA
+   to Releases automatically; the same script works locally on a Mac.
 2. **On-device generation needs a runtime package** (see above). Without it the model manager,
    Hub integration and cloud-backed agents are fully functional, and local Start reports the
    missing runtime honestly.
