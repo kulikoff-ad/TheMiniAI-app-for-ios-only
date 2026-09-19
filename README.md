@@ -166,7 +166,8 @@ AIAgentHub/
     Tools/                     FileTool, WebTool
     Inference/                 InferenceEngine + llama.cpp / Core ML / ONNX / MLX adapters
     Companion/                 CompanionClient
-  Resources/                   Info.plist, entitlements, asset catalog
+  Resources/                   Asset catalog
+Config/                        Info.plist, entitlements (outside the synchronized group)
 Companion/aiagenthub_companion.py   Desktop companion daemon (stdlib only)
 scripts/build_ipa.sh                Signed & unsigned IPA builds
 .github/workflows/ios.yml           CI that produces an unsigned IPA artifact
