@@ -8,7 +8,7 @@ struct ReplaceProjectView: View {
     @State private var step: Int = 1
     @State private var oldFiles: [GHContent] = []
     @State private var isWorking = false
-    @State private var error: String?
+    @State private var errorMessage: String?
     @State private var diff: String = ""
     @State private var commitMessage = "Replace with AI Agent Hub — full project replacement"
     @State private var newBranch = "ai-agent-hub/replace"
@@ -29,7 +29,7 @@ struct ReplaceProjectView: View {
                 } else {
                     Text("Select a repository in the GitHub tab first.").font(.caption).foregroundStyle(Theme.textDim).card()
                 }
-                if let error { Text(error).font(.caption).foregroundStyle(Theme.bad).card() }
+                if let errorMessage { Text(errorMessage).font(.caption).foregroundStyle(Theme.bad).card() }
                 if !diff.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         SectionHeader(title: "Git diff")
@@ -138,18 +138,18 @@ struct ReplaceProjectView: View {
     // MARK: Actions
 
     private func fetchOldFiles() async {
-        guard let ctx = github.context else { error = "No repo selected"; return }
-        isWorking = true; error = nil
+        guard let ctx = github.context else { errorMessage = "No repo selected"; return }
+        isWorking = true; errorMessage = nil
         do {
             oldFiles = try await GitHubAPI.shared.contents(owner: ctx.owner, repo: ctx.repo, path: "", ref: ctx.baseBranch)
             step = 2; status = "Fetched \(oldFiles.count) items."
-        } catch { error = error.localizedDescription }
+        } catch let e { errorMessage = e.localizedDescription }
         isWorking = false
     }
 
     private func createBranchAndDelete() async {
         guard let ctx = github.context else { return }
-        isWorking = true; error = nil
+        isWorking = true; errorMessage = nil
         do {
             // create branch from base
             try await GitHubAPI.shared.createBranch(owner: ctx.owner, repo: ctx.repo, newBranch: newBranch, fromBranch: ctx.baseBranch)
@@ -165,14 +165,14 @@ struct ReplaceProjectView: View {
                 try? await GitHubAPI.shared.deleteFile(owner: ctx.owner, repo: ctx.repo, path: item.path, message: "Remove old project file \(item.path) for AI Agent Hub replacement", branch: newBranch, sha: item.sha ?? "")
             }
             step = 4; status = "Branch \(newBranch) created and old files removed (best-effort)."
-        } catch { error = error.localizedDescription }
+        } catch let e { errorMessage = e.localizedDescription }
         isWorking = false
     }
 
     private func uploadNewFiles() async {
         guard let ctx = github.context else { return }
         let branch = createdBranch ?? newBranch
-        isWorking = true; error = nil
+        isWorking = true; errorMessage = nil
         do {
             // Minimal new structure: README, LICENSE, .gitignore — real app embeds the full structure via separate pushes in CI.
             // We upload marker files to show the flow; full ZIP is linked in README already.
@@ -183,7 +183,7 @@ struct ReplaceProjectView: View {
             let gi = (try? String(contentsOfFile: ".gitignore")) ?? "build/\n"
             try await GitHubAPI.shared.putFile(owner: ctx.owner, repo: ctx.repo, path: ".gitignore", content: gi, message: "Add .gitignore", branch: branch)
             step = 7; status = "New AI Agent Hub files uploaded."
-        } catch { error = error.localizedDescription }
+        } catch let e { errorMessage = e.localizedDescription }
         isWorking = false
     }
 
@@ -195,7 +195,7 @@ struct ReplaceProjectView: View {
             diff = try await GitHubAPI.shared.compare(owner: ctx.owner, repo: ctx.repo, base: ctx.baseBranch, head: branch)
             if diff.isEmpty { diff = "(No textual diff — binary or large changes. Check the branch on GitHub.)" }
             step = 15; status = "Diff loaded."
-        } catch { error = error.localizedDescription }
+        } catch let e { errorMessage = e.localizedDescription }
         isWorking = false
     }
 

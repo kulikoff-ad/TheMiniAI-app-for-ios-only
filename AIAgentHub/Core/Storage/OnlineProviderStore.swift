@@ -102,14 +102,14 @@ final class OnlineProviderStore: ObservableObject {
     }
     func delete(_ p: OnlineProvider) {
         providers.removeAll { $0.id == p.id }
-        KeychainStore.deleteGeneric(key: p.keychainKey)
+        _ = KeychainStore.deleteGeneric(key: p.keychainKey)
         if selectedId == p.id { selectedId = providers.first?.id }
     }
 
     // MARK: Keychain per provider
 
     func setKey(_ key: String, for provider: OnlineProvider) {
-        KeychainStore.setGeneric(key, for: provider.keychainKey)
+        _ = KeychainStore.setGeneric(key, for: provider.keychainKey)
     }
     func getKey(for provider: OnlineProvider) -> String? {
         KeychainStore.getGeneric(key: provider.keychainKey)
