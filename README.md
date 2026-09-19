@@ -9,6 +9,25 @@ GitHub, and your own computer.
 
 ---
 
+## ⬇️ Downloads
+
+Прямые ссылки (ветка `arena/01a0b817-theminiai-app-for-ios-only`):
+
+| Файл | Что это | Ссылка |
+|---|---|---|
+| `AIAgentHub-src-v1.0.0.zip` | Полный Xcode-проект (ZIP, 95 KB) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.zip) |
+| `AIAgentHub-src-v1.0.0.tar.gz` | Полный Xcode-проект (tar.gz, 66 KB) | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-src-v1.0.0.tar.gz) |
+| `AIAgentHub-Companion-v1.0.0.zip` | Companion-демон для macOS/Windows/Linux | [скачать](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/AIAgentHub-Companion-v1.0.0.zip) |
+| `SHA256SUMS.txt` | Контрольные суммы | [открыть](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/raw/arena/01a0b817-theminiai-app-for-ios-only/dist/SHA256SUMS.txt) |
+
+**Готовый IPA** собирается автоматически workflow-ом `Build IPA` на macOS-раннере и публикуется
+в [Releases](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/releases) с тегом
+`build-<номер>`, а также доступен как артефакт в
+[Actions](https://github.com/kulikoff-ad/TheMiniAI-app-for-ios-only/actions/workflows/ios.yml).
+IPA невозможно собрать на Linux — нужен Xcode, поэтому его делает CI или ваш Mac.
+
+---
+
 ## Contents
 
 - [Feature tour](#feature-tour)
