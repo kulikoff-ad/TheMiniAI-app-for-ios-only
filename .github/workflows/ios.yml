@@ -5,16 +5,44 @@ on:
     branches: [ "**" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app || true
+      - uses: actions/checkout@v5
+
+      - name: Show toolchain
+        run: |
+          sudo xcode-select -p
+          xcodebuild -version
+          swift --version
+
       - name: Build unsigned IPA
         run: ./scripts/build_ipa.sh --unsigned
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
         with:
           name: AIAgentHub-unsigned-ipa
           path: build/*.ipa
+          if-no-files-found: error
+
+      - name: Publish rolling release with download link
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="build-${GITHUB_RUN_NUMBER}"
+          gh release create "$TAG" build/*.ipa \
+            --title "AI Agent Hub — unsigned IPA (build ${GITHUB_RUN_NUMBER})" \
+            --notes "Unsigned IPA built from \`${GITHUB_SHA}\`.
+
+          Install with AltStore / Sideloadly, or re-sign with your own certificate:
+          \`\`\`
+          ./scripts/build_ipa.sh --team <YOUR_TEAM_ID>
+          \`\`\`" \
+            --target "$GITHUB_SHA" \
+            || gh release upload "$TAG" build/*.ipa --clobber

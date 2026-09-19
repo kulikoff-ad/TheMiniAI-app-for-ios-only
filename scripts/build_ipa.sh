@@ -48,21 +48,43 @@ ARCHIVE="$BUILD_DIR/$SCHEME.xcarchive"
 
 echo "==> Archiving ($CONFIG)"
 if [[ "$UNSIGNED" == "1" ]]; then
-  xcodebuild archive \
-    -project "$PROJECT" \
-    -scheme "$SCHEME" \
-    -configuration "$CONFIG" \
-    -destination 'generic/platform=iOS' \
-    -archivePath "$ARCHIVE" \
-    CODE_SIGN_IDENTITY="" \
-    CODE_SIGNING_REQUIRED=NO \
-    CODE_SIGNING_ALLOWED=NO \
-    ENABLE_BITCODE=NO | xcpretty || true
+  # Pipe through xcpretty only when it is installed, and never hide a failure:
+  # PIPESTATUS keeps xcodebuild's real exit code.
+  set -o pipefail
+  if command -v xcpretty >/dev/null; then
+    xcodebuild archive \
+      -project "$PROJECT" \
+      -scheme "$SCHEME" \
+      -configuration "$CONFIG" \
+      -destination 'generic/platform=iOS' \
+      -archivePath "$ARCHIVE" \
+      CODE_SIGN_IDENTITY="" \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGNING_ALLOWED=NO \
+      ENABLE_BITCODE=NO | xcpretty
+  else
+    xcodebuild archive \
+      -project "$PROJECT" \
+      -scheme "$SCHEME" \
+      -configuration "$CONFIG" \
+      -destination 'generic/platform=iOS' \
+      -archivePath "$ARCHIVE" \
+      CODE_SIGN_IDENTITY="" \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGNING_ALLOWED=NO \
+      ENABLE_BITCODE=NO
+  fi
+
+  APP="$ARCHIVE/Products/Applications/$SCHEME.app"
+  if [[ ! -d "$APP" ]]; then
+    echo "error: archive succeeded but $APP is missing." >&2
+    exit 1
+  fi
 
   echo "==> Packaging unsigned IPA"
   PAYLOAD="$BUILD_DIR/Payload"
   rm -rf "$PAYLOAD"; mkdir -p "$PAYLOAD"
-  cp -R "$ARCHIVE/Products/Applications/$SCHEME.app" "$PAYLOAD/"
+  cp -R "$APP" "$PAYLOAD/"
   ( cd "$BUILD_DIR" && zip -qry "$SCHEME-unsigned.ipa" Payload )
   rm -rf "$PAYLOAD"
   echo "✅ $BUILD_DIR/$SCHEME-unsigned.ipa"

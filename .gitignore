@@ -6,3 +6,6 @@ xcuserdata/
 *.ipa
 *.xcarchive
 __pycache__/
+
+# Release archives are committed on purpose
+!dist/
